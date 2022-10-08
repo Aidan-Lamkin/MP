@@ -389,7 +389,7 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 }
 
 void MPEngine::_updateScene() {
-
+    _bobomb->_updateFlicker();
     // turn right
     if(_keys[GLFW_KEY_SPACE]){
         switch(_cameraIndex){
