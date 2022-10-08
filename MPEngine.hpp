@@ -44,6 +44,8 @@ private:
     void _cleanupBuffers() final;
     void _cleanupShaders() final;
 
+    void _changeCamera(bool up);
+
     /// \desc draws everything to the scene from a particular point of view
     /// \param viewMtx the current view matrix for our camera
     /// \param projMtx the current projection matrix for our camera
@@ -65,6 +67,11 @@ private:
 
     /// \desc the arcball camera in our world
     CSCI441::ArcballCam* _arcballCam;
+
+    /// \desc the freecam camera in our world
+    CSCI441::FreeCam* _freeCam;
+
+    GLint _cameraIndex = 0;
 
     /// \desc our motorcycle model
     Motorcycle* _motorcycle;

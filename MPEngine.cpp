@@ -33,6 +33,7 @@ MPEngine::MPEngine()
 
 MPEngine::~MPEngine() {
     delete _arcballCam;
+    delete _freeCam;
 }
 
 void MPEngine::handleKeyEvent(GLint key, GLint action) {
@@ -49,6 +50,12 @@ void MPEngine::handleKeyEvent(GLint key, GLint action) {
             case GLFW_KEY_LEFT_SHIFT:
             case GLFW_KEY_RIGHT_SHIFT:
                 _shiftButtonState = GLFW_PRESS;
+                break;
+            case GLFW_KEY_UP:
+                _changeCamera(true);
+                break;
+            case GLFW_KEY_DOWN:
+                _changeCamera(false);
                 break;
 
             default: break; // suppress CLion warning
@@ -235,6 +242,12 @@ void MPEngine::_generateEnvironment() {
 
 void MPEngine::_setupScene() {
     //initialize arcballcam
+    _freeCam = new CSCI441::FreeCam();
+    _freeCam->setPosition( glm::vec3(60.0f, 40.0f, 30.0f) );
+    _freeCam->setTheta( -M_PI / 3.0f );
+    _freeCam->setPhi( M_PI / 2.8f );
+    _freeCam->recomputeOrientation();
+
     _arcballCam = new CSCI441::ArcballCam();
     _arcballCam->setPosition( glm::vec3(0.0f, .4f, 0.0f) );
     _arcballCam->setLookAtPoint(glm::vec3(0,.1f,0.0f));
@@ -318,36 +331,74 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 
     //// BEGIN DRAWING THE MOTORCYCLE ////
     glm::mat4 modelMtx(1.0f);
-    modelMtx = glm::translate( modelMtx, _arcballCam->getLookAtPoint() );
-    _motorcycle->drawMotorcycle(modelMtx, viewMtx, projMtx);
+    if(_cameraIndex == 0) {
+        modelMtx = glm::translate(modelMtx, _arcballCam->getLookAtPoint());
+        _motorcycle->drawMotorcycle(modelMtx, viewMtx, projMtx);
+    }
+    else if(_cameraIndex == 1){
+        modelMtx = glm::translate(modelMtx, _freeCam->getLookAtPoint());
+    }
     //// END DRAWING THE MOTORCYCLE ////
 }
 
 void MPEngine::_updateScene() {
 
     // turn right
+    if(_keys[GLFW_KEY_SPACE]){
+        if(_cameraIndex == 1){
+            if( _keys[GLFW_KEY_LEFT_SHIFT] || _keys[GLFW_KEY_RIGHT_SHIFT] ) {
+                _freeCam->moveBackward(.25f);
+            }
+                // go forward
+            else {
+                _freeCam->moveForward(.25f);
+            }
+        }
+    }
     if( _keys[GLFW_KEY_D] ) {
-        _motorcycle->rotate(1.0f);
+        switch(_cameraIndex) {
+            case(0):
+                _motorcycle->rotate(1.0f);
+                break;
+            case(1):
+                _freeCam->rotate(.02f, 0.0f);
+        }
     }
     // turn left
     if( _keys[GLFW_KEY_A] ) {
-        _motorcycle->rotate(-1.0f);
+        switch(_cameraIndex) {
+            case(0):
+                _motorcycle->rotate(-1.0f);
+                break;
+            case(1):
+                _freeCam->rotate(-.02f, 0.0f);
+        }
 
     }
     // move forward
     if( _keys[GLFW_KEY_W] ) {
-        _motorcycle->driveForward();
-        _motorcycle->_checkBounds(WORLD_SIZE);
-        _arcballCam->setLookAtPoint(_motorcycle->getPosition());
-        _arcballCam->recomputeOrientation();
+        switch(_cameraIndex) {
+            case(0):
+                _motorcycle->driveForward();
+                _motorcycle->_checkBounds(WORLD_SIZE);
+                _arcballCam->setLookAtPoint(_motorcycle->getPosition());
+                _arcballCam->recomputeOrientation();
+            case(1):
+                _freeCam->rotate(0.0f, 0.02f);
+        }
 
     }
     // move backward
     if( _keys[GLFW_KEY_S] ) {
-        _motorcycle->driveBackward();
-        _motorcycle->_checkBounds(WORLD_SIZE);
-        _arcballCam->setLookAtPoint(_motorcycle->getPosition());
-        _arcballCam->recomputeOrientation();
+        switch(_cameraIndex) {
+            case(0):
+                _motorcycle->driveBackward();
+                _motorcycle->_checkBounds(WORLD_SIZE);
+                _arcballCam->setLookAtPoint(_motorcycle->getPosition());
+                _arcballCam->recomputeOrientation();
+            case(1):
+                _freeCam->rotate(0.0f, -0.02f);
+        }
     }
 
 }
@@ -400,6 +451,25 @@ void MPEngine::_computeAndSendMatrixUniforms(glm::mat4 modelMtx, glm::mat4 viewM
 
     glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(modelMtx)));
     _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.normalMatrix, normalMatrix);
+}
+
+void MPEngine::_changeCamera(bool up) {
+    if(up){
+        if(_cameraIndex == 1){
+            _cameraIndex = 0;
+        }
+        else{
+            _cameraIndex++;
+        }
+    }
+    else{
+        if(_cameraIndex == 0){
+            _cameraIndex = 1;
+        }
+        else{
+            _cameraIndex--;
+        }
+    }
 }
 
 //*************************************************************************************
