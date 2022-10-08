@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(MP)
 set(CMAKE_CXX_STANDARD 17)
-set(SOURCE_FILES main.cpp MPEngine.cpp MPEngine.hpp motorcycle.cpp motorcycle.hpp ArcBallCam.hpp)
+set(SOURCE_FILES main.cpp MPEngine.cpp MPEngine.hpp motorcycle.cpp motorcycle.hpp ArcBallCam.hpp bobomb.cpp bobomb.hpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 # Windows with MinGW Installations

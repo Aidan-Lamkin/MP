@@ -89,6 +89,12 @@
 		<Unit filename="/Users/aidan/Documents/CSCI_441/MP/MPEngine.hpp">
 			<Option target="MP"/>
 		</Unit>
+		<Unit filename="/Users/aidan/Documents/CSCI_441/MP/bobomb.cpp">
+			<Option target="MP"/>
+		</Unit>
+		<Unit filename="/Users/aidan/Documents/CSCI_441/MP/bobomb.hpp">
+			<Option target="MP"/>
+		</Unit>
 		<Unit filename="/Users/aidan/Documents/CSCI_441/MP/main.cpp">
 			<Option target="MP"/>
 		</Unit>

@@ -169,6 +169,33 @@ MPEngine.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MP.dir/build.make CMakeFiles/MP.dir/MPEngine.cpp.s
 .PHONY : MPEngine.cpp.s
 
+bobomb.o: bobomb.cpp.o
+
+.PHONY : bobomb.o
+
+# target to build an object file
+bobomb.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MP.dir/build.make CMakeFiles/MP.dir/bobomb.cpp.o
+.PHONY : bobomb.cpp.o
+
+bobomb.i: bobomb.cpp.i
+
+.PHONY : bobomb.i
+
+# target to preprocess a source file
+bobomb.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MP.dir/build.make CMakeFiles/MP.dir/bobomb.cpp.i
+.PHONY : bobomb.cpp.i
+
+bobomb.s: bobomb.cpp.s
+
+.PHONY : bobomb.s
+
+# target to generate assembly for a file
+bobomb.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MP.dir/build.make CMakeFiles/MP.dir/bobomb.cpp.s
+.PHONY : bobomb.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -235,6 +262,9 @@ help:
 	@echo "... MPEngine.o"
 	@echo "... MPEngine.i"
 	@echo "... MPEngine.s"
+	@echo "... bobomb.o"
+	@echo "... bobomb.i"
+	@echo "... bobomb.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

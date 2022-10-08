@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/MP.dir/MPEngine.cpp.o"
+  "CMakeFiles/MP.dir/bobomb.cpp.o"
   "CMakeFiles/MP.dir/main.cpp.o"
   "CMakeFiles/MP.dir/motorcycle.cpp.o"
   "MP"
