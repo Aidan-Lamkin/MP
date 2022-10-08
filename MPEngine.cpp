@@ -29,6 +29,7 @@ MPEngine::MPEngine()
 
     _mousePosition = glm::vec2(MOUSE_UNINITIALIZED, MOUSE_UNINITIALIZED );
     _leftMouseButtonState = GLFW_RELEASE;
+    _modelChoice = 0;
 }
 
 MPEngine::~MPEngine() {
@@ -57,7 +58,21 @@ void MPEngine::handleKeyEvent(GLint key, GLint action) {
             case GLFW_KEY_DOWN:
                 _changeCamera(false);
                 break;
-
+            case GLFW_KEY_1:
+                _modelChoice = 0;
+                _arcballCam->setPosition(_motorcycle->getPosition());
+                _arcballCam->setLookAtPoint(_motorcycle->getPosition());
+                _arcballCam->recomputeOrientation();
+                break;
+            case GLFW_KEY_2:
+                _modelChoice = 1;
+                _arcballCam->setPosition(_bobomb->getPosition());
+                _arcballCam->setLookAtPoint(_bobomb->getPosition());
+                _arcballCam->recomputeOrientation();
+                break;
+            case GLFW_KEY_3:
+                _modelChoice = 2;
+                break;
             default: break; // suppress CLion warning
         }
     }
@@ -152,6 +167,13 @@ void MPEngine::_setupBuffers() {
                        _lightingShaderUniformLocations.mvpMatrix,
                        _lightingShaderUniformLocations.normalMatrix,
                        _lightingShaderUniformLocations.materialColor);
+
+    _bobomb = new Bobomb(_lightingShaderProgram->getShaderProgramHandle(),
+                         _lightingShaderUniformLocations.mvpMatrix,
+                         _lightingShaderUniformLocations.normalMatrix,
+                         _lightingShaderUniformLocations.materialColor);
+    // initialize bobomb Position
+    _bobomb->setPosition(glm::vec3(0.0f,0.0f,0.0f));
 
     _createGroundBuffers();
     _generateEnvironment();
@@ -335,23 +357,35 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 
     }
     //// END DRAWING THE BUILDINGS AND TREES////
-
-    //// BEGIN DRAWING THE MOTORCYCLE ////
-    glm::mat4 modelMtx(1.0f);
-    glm::mat4 arcballModelMtx(1.0f);
-    switch(_cameraIndex){
-        case(0):
-            arcballModelMtx = glm::translate(arcballModelMtx, _arcballCam->getLookAtPoint());
-            _motorcycle->drawMotorcycle(arcballModelMtx, viewMtx, projMtx);
-            break;
-        case(1):
-            _motorcycle->drawMotorcycle(arcballModelMtx, viewMtx, projMtx);
-            modelMtx = glm::translate( modelMtx, _freeCam->getPosition() );
-            modelMtx = glm::rotate( modelMtx, -_freeCam->getTheta(), CSCI441::Y_AXIS );
-            modelMtx = glm::rotate( modelMtx,  _freeCam->getPhi(), CSCI441::X_AXIS );
-            break;
+    if(_modelChoice == 0) {
+        //// BEGIN DRAWING THE MOTORCYCLE ////
+        glm::mat4 modelMtx(1.0f);
+        glm::mat4 arcballModelMtx(1.0f);
+        switch (_cameraIndex) {
+            case (0):
+                arcballModelMtx = glm::translate(arcballModelMtx, _arcballCam->getLookAtPoint());
+                _motorcycle->drawMotorcycle(arcballModelMtx, viewMtx, projMtx);
+                break;
+            case (1):
+                _motorcycle->drawMotorcycle(arcballModelMtx, viewMtx, projMtx);
+                modelMtx = glm::translate(modelMtx, _freeCam->getPosition());
+                modelMtx = glm::rotate(modelMtx, -_freeCam->getTheta(), CSCI441::Y_AXIS);
+                modelMtx = glm::rotate(modelMtx, _freeCam->getPhi(), CSCI441::X_AXIS);
+                break;
+        }
     }
     //// END DRAWING THE MOTORCYCLE ////
+    else if(_modelChoice == 1) {
+        //// BEGIN DRAWING THE HERO ////
+        glm::mat4 modelMtx(1.0f);
+        // model translated relative to stored hero position coordinates.
+        modelMtx = glm::translate(modelMtx, glm::vec3(_bobomb->getPosition().x, _bobomb->getPosition().y,
+                                                      _bobomb->getPosition().z));
+        // model rotated relative to stored direction angle
+        modelMtx = glm::rotate(modelMtx, _bobomb->getDirection(), CSCI441::Y_AXIS);
+        _bobomb->drawBobomb(modelMtx, viewMtx, projMtx);
+        //// END DRAWING THE HERO ////
+    }
 }
 
 void MPEngine::_updateScene() {
@@ -375,7 +409,9 @@ void MPEngine::_updateScene() {
     if( _keys[GLFW_KEY_D] ) {
         switch(_cameraIndex) {
             case(0):
-                _motorcycle->rotate(1.0f);
+                if(_modelChoice == 0) _motorcycle->rotate(1.0f);
+
+                else if(_modelChoice == 1) _bobomb->rotateBobomb(GLFW_KEY_D);
                 break;
             case(1):
                 _freeCam->rotate(.02f, 0.0f);
@@ -386,7 +422,9 @@ void MPEngine::_updateScene() {
     if( _keys[GLFW_KEY_A] ) {
         switch(_cameraIndex) {
             case(0):
-                _motorcycle->rotate(-1.0f);
+                if(_modelChoice == 0) _motorcycle->rotate(-1.0f);
+
+                else if(_modelChoice == 1) _bobomb->rotateBobomb(GLFW_KEY_A);
                 break;
             case(1):
                 _freeCam->rotate(-.02f, 0.0f);
@@ -396,11 +434,20 @@ void MPEngine::_updateScene() {
     }
     // move forward
     if( _keys[GLFW_KEY_W] ) {
+
         switch(_cameraIndex) {
             case(0):
-                _motorcycle->driveForward();
-                _motorcycle->_checkBounds(WORLD_SIZE);
-                _arcballCam->setLookAtPoint(_motorcycle->getPosition());
+                if(_modelChoice == 0) {
+                    _motorcycle->driveForward();
+                    _motorcycle->_checkBounds(WORLD_SIZE);
+                    _arcballCam->setLookAtPoint(_motorcycle->getPosition());
+                }
+
+                else if(_modelChoice == 1) {
+                    _bobomb->driveForward(WORLD_SIZE);
+                    _arcballCam->setLookAtPoint(_bobomb->getPosition());
+                }
+
                 _arcballCam->recomputeOrientation();
                 break;
             case(1):
@@ -412,10 +459,17 @@ void MPEngine::_updateScene() {
     // move backward
     if( _keys[GLFW_KEY_S] ) {
         switch(_cameraIndex) {
-            case(0):
-                _motorcycle->driveBackward();
-                _motorcycle->_checkBounds(WORLD_SIZE);
-                _arcballCam->setLookAtPoint(_motorcycle->getPosition());
+            case (0):
+                if (_modelChoice == 0) {
+                    _motorcycle->driveBackward();
+                    _motorcycle->_checkBounds(WORLD_SIZE);
+                    _arcballCam->setLookAtPoint(_motorcycle->getPosition());
+                }
+                else if(_modelChoice == 1) {
+                    _bobomb->driveBackward(WORLD_SIZE);
+                    _arcballCam->setLookAtPoint(_bobomb->getPosition());
+                }
+
                 _arcballCam->recomputeOrientation();
                 break;
             case(1):

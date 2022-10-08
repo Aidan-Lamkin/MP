@@ -6,6 +6,7 @@
 #include <CSCI441/ShaderProgram.hpp>
 
 #include "motorcycle.hpp"
+#include "bobomb.hpp"
 #include "ArcBallCam.hpp"
 
 #include <vector>
@@ -73,8 +74,15 @@ private:
 
     GLint _cameraIndex = 0;
 
+    /// \desc int to choose model drawn
+    GLint _modelChoice;
+
     /// \desc our motorcycle model
     Motorcycle* _motorcycle;
+
+    /// \desc our bobomb model
+    Bobomb* _bobomb;
+
 
     /// \desc the size of the world (controls the ground size and locations of buildings)
     static constexpr GLfloat WORLD_SIZE = 55.0f;
