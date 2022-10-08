@@ -89,12 +89,19 @@ void MPEngine::handleCursorPositionEvent(glm::vec2 currMousePosition) {
 
     // if the left mouse button is being held down while the mouse is moving
     if(_leftMouseButtonState == GLFW_PRESS) {
-        if(_shiftButtonState != GLFW_PRESS) {
+        if (_shiftButtonState != GLFW_PRESS) {
             // rotate the camera by the distance the mouse moved
-            _arcballCam->rotate((currMousePosition.x - _mousePosition.x) * 0.005f,
-                                (_mousePosition.y - currMousePosition.y) * 0.005f);
-        }
-        else{
+            switch (_cameraIndex) {
+                case (0):
+                    _arcballCam->rotate((currMousePosition.x - _mousePosition.x) * 0.005f,
+                                        (_mousePosition.y - currMousePosition.y) * 0.005f);
+                    break;
+                case (1):
+                    _freeCam->rotate((currMousePosition.x - _mousePosition.x) * 0.005f,
+                                     (_mousePosition.y - currMousePosition.y) * 0.005f);
+                    break;
+            }
+        } else {
             _arcballCam->zoom((_mousePosition.y - currMousePosition.y) * 0.005f);
         }
     }
@@ -327,16 +334,22 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 
 
     }
-    //// END DRAWING THE BUILDINGS ////
+    //// END DRAWING THE BUILDINGS AND TREES////
 
     //// BEGIN DRAWING THE MOTORCYCLE ////
     glm::mat4 modelMtx(1.0f);
-    if(_cameraIndex == 0) {
-        modelMtx = glm::translate(modelMtx, _arcballCam->getLookAtPoint());
-        _motorcycle->drawMotorcycle(modelMtx, viewMtx, projMtx);
-    }
-    else if(_cameraIndex == 1){
-        modelMtx = glm::translate(modelMtx, _freeCam->getLookAtPoint());
+    glm::mat4 arcballModelMtx(1.0f);
+    switch(_cameraIndex){
+        case(0):
+            arcballModelMtx = glm::translate(arcballModelMtx, _arcballCam->getLookAtPoint());
+            _motorcycle->drawMotorcycle(arcballModelMtx, viewMtx, projMtx);
+            break;
+        case(1):
+            _motorcycle->drawMotorcycle(arcballModelMtx, viewMtx, projMtx);
+            modelMtx = glm::translate( modelMtx, _freeCam->getPosition() );
+            modelMtx = glm::rotate( modelMtx, -_freeCam->getTheta(), CSCI441::Y_AXIS );
+            modelMtx = glm::rotate( modelMtx,  _freeCam->getPhi(), CSCI441::X_AXIS );
+            break;
     }
     //// END DRAWING THE MOTORCYCLE ////
 }
@@ -345,14 +358,18 @@ void MPEngine::_updateScene() {
 
     // turn right
     if(_keys[GLFW_KEY_SPACE]){
-        if(_cameraIndex == 1){
-            if( _keys[GLFW_KEY_LEFT_SHIFT] || _keys[GLFW_KEY_RIGHT_SHIFT] ) {
-                _freeCam->moveBackward(.25f);
-            }
-                // go forward
-            else {
-                _freeCam->moveForward(.25f);
-            }
+        switch(_cameraIndex){
+            case(0):
+                break;
+            case(1):
+                if( _keys[GLFW_KEY_LEFT_SHIFT] || _keys[GLFW_KEY_RIGHT_SHIFT] ) {
+                    _freeCam->moveBackward(.25f);
+                }
+                    // go forward
+                else {
+                    _freeCam->moveForward(.25f);
+                }
+                break;
         }
     }
     if( _keys[GLFW_KEY_D] ) {
@@ -362,6 +379,7 @@ void MPEngine::_updateScene() {
                 break;
             case(1):
                 _freeCam->rotate(.02f, 0.0f);
+                break;
         }
     }
     // turn left
@@ -372,6 +390,7 @@ void MPEngine::_updateScene() {
                 break;
             case(1):
                 _freeCam->rotate(-.02f, 0.0f);
+                break;
         }
 
     }
@@ -383,8 +402,10 @@ void MPEngine::_updateScene() {
                 _motorcycle->_checkBounds(WORLD_SIZE);
                 _arcballCam->setLookAtPoint(_motorcycle->getPosition());
                 _arcballCam->recomputeOrientation();
+                break;
             case(1):
                 _freeCam->rotate(0.0f, 0.02f);
+                break;
         }
 
     }
@@ -396,11 +417,12 @@ void MPEngine::_updateScene() {
                 _motorcycle->_checkBounds(WORLD_SIZE);
                 _arcballCam->setLookAtPoint(_motorcycle->getPosition());
                 _arcballCam->recomputeOrientation();
+                break;
             case(1):
                 _freeCam->rotate(0.0f, -0.02f);
+                break;
         }
     }
-
 }
 
 void MPEngine::run() {
@@ -426,8 +448,15 @@ void MPEngine::run() {
         glm::mat4 projectionMatrix = glm::perspective( 45.0f, (GLfloat) framebufferWidth / (GLfloat) framebufferHeight, 0.001f, 1000.0f );
 
         // set up our look at matrix to position our camera
-        //glm::mat4 viewMatrix = _freeCam->getViewMatrix();
-        glm::mat4 viewMatrix = _arcballCam->getViewMatrix();
+        glm::mat4 viewMatrix (1.0f);
+        switch(_cameraIndex) {
+            case(0):
+                viewMatrix = _arcballCam->getViewMatrix();
+                break;
+            case(1):
+                viewMatrix = _freeCam->getViewMatrix();
+                break;
+        }
 
         // draw everything to the window
         _renderScene(viewMatrix, projectionMatrix);
