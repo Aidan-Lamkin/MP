@@ -89,6 +89,16 @@ private:
     /// \desc information list of all the buildings to draw
     std::vector<BuildingData> _buildings;
 
+
+    struct TreeData {
+        glm::mat4 modelMatrix;
+        glm::vec3 leafTranslate;
+        glm::vec3 treeColor;
+        glm::vec3 leafColor;
+    };
+
+    std::vector<TreeData> _trees;
+
     /// \desc generates building information to make up our scene
     void _generateEnvironment();
 
