@@ -72,6 +72,9 @@ private:
     /// \desc the freecam camera in our world
     CSCI441::FreeCam* _freeCam;
 
+    /// \desc the firstPerson camera in our world
+    CSCI441::FreeCam* _firstPersonCam;
+
     GLint _cameraIndex = 0;
 
     /// \desc int to choose model drawn
@@ -137,6 +140,8 @@ private:
         GLint vNormal;
     } _lightingShaderAttributeLocations;
 
+    bool firstPersonOn = false;
+
     /// \desc precomputes the matrix uniforms CPU-side and then sends them
     /// to the GPU to be used in the shader for each vertex.  It is more efficient
     /// to calculate these once and then use the resultant product in the shader.
@@ -144,6 +149,8 @@ private:
     /// \param viewMtx camera view matrix
     /// \param projMtx camera projection matrix
     void _computeAndSendMatrixUniforms(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx) const;
+
+    void _drawFirstPerson(glm::mat4 viewMtx, glm::mat4 projMtx);
 };
 
 void a3_engine_keyboard_callback(GLFWwindow *window, int key, int scancode, int action, int mods );

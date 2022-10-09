@@ -19,7 +19,7 @@ Motorcycle::Motorcycle(GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, 
         _shaderProgramUniformLocations.normalMtx = normalMtxUniformLocation;
         _shaderProgramUniformLocations.materialColor = materialColorUniformLocation;
 
-        _rotateMotorcycleAngle = M_PI / 2.0f;
+        _rotateMotorcycleAngle = 3 * M_PI / 2.0f;
 
         _colorBody = glm::vec3(1.0f,1.0f,1.0f);
         _scaleBody = glm::vec3(5.0f, 0.5f, .5f);
@@ -32,6 +32,7 @@ Motorcycle::Motorcycle(GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, 
         _movementSpeed = 0.25f;
 
         _position = glm::vec3(0,0.1,0);
+        _cameraOffset = glm::vec3(0, .5, 0);
 
 }
 
@@ -43,6 +44,7 @@ void Motorcycle::driveForward() {
     }
     _position.x += cos(-_rotateMotorcycleAngle) * _movementSpeed;
     _position.z += sin(-_rotateMotorcycleAngle) * _movementSpeed;
+
 }
 
 //moves backward, rotates wheels and checks to bounds of grid
@@ -102,7 +104,9 @@ void Motorcycle::_drawMotorcycleWheel(bool isFrontWheel, glm::mat4 modelMtx, glm
 
 //rotates motorcycle
 void Motorcycle::rotate(GLfloat dTheta) {
-    _rotateMotorcycleAngle -=  dTheta * M_PI / 16.0f;
+    _rotateMotorcycleAngle -=  dTheta * M_PI / 24.0f;
+    if(_rotateMotorcycleAngle > 2 * M_PI) _rotateMotorcycleAngle -= 2 * M_PI;
+    if(_rotateMotorcycleAngle < 0) _rotateMotorcycleAngle += 2 * M_PI;
 }
 
 glm::vec3 Motorcycle::getPosition() {
@@ -123,5 +127,13 @@ void Motorcycle::_checkBounds(GLfloat WorldSize) {
     else if(_position.z < -WorldSize){
         _position.z = -WorldSize;
     }
+}
+
+GLfloat Motorcycle::getAngle() {
+    return _rotateMotorcycleAngle;
+}
+
+glm::vec3 Motorcycle::getCameraOffset() {
+    return _cameraOffset;
 }
 

@@ -24,6 +24,8 @@ public:
     void rotate(GLfloat dTheta);
 
     glm::vec3 getPosition();
+    glm::vec3 getCameraOffset();
+    GLfloat getAngle();
 
     //check to see if you went off grid
     void _checkBounds(GLfloat worldSize);
@@ -36,6 +38,9 @@ private:
     GLfloat _movementSpeed;
 
     glm::vec3 _position;
+
+    glm::vec3 _cameraOffset;
+
 
     //uniforms
     struct ShaderProgramUniformLocations {

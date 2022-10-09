@@ -73,6 +73,9 @@ void MPEngine::handleKeyEvent(GLint key, GLint action) {
             case GLFW_KEY_3:
                 _modelChoice = 2;
                 break;
+            case GLFW_KEY_4:
+                firstPersonOn = !firstPersonOn;
+                break;
             default: break; // suppress CLion warning
         }
     }
@@ -284,6 +287,12 @@ void MPEngine::_setupScene() {
     _arcballCam->setPhi( M_PI / 2.8f + .45 );
     _arcballCam->recomputeOrientation();
 
+    _firstPersonCam = new CSCI441::FreeCam();
+    _firstPersonCam->setPhi(M_PI / 2.8f + .80 );
+    _firstPersonCam->setPosition(_motorcycle->getPosition() + _motorcycle->getCameraOffset());
+    _firstPersonCam->setTheta(0);
+    _firstPersonCam->recomputeOrientation();
+
     glm::vec3 lightColor = glm::vec3(1,1,1);
     glm::vec3 lightDirection = glm::vec3(-1,-1,-1);
     glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),_lightingShaderUniformLocations.lightColor,1,&lightColor[0]);
@@ -372,6 +381,7 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
     // model rotated relative to stored direction angle
     modelBobombMtx = glm::rotate(modelBobombMtx, _bobomb->getDirection(), CSCI441::Y_AXIS);
     _bobomb->drawBobomb(modelBobombMtx, viewMtx, projMtx);
+
     //// END DRAWING THE HERO ////
 }
 
@@ -386,7 +396,7 @@ void MPEngine::_updateScene() {
                 if( _keys[GLFW_KEY_LEFT_SHIFT] || _keys[GLFW_KEY_RIGHT_SHIFT] ) {
                     _freeCam->moveBackward(.25f);
                 }
-                    // go forward
+                // go forward
                 else {
                     _freeCam->moveForward(.25f);
                 }
@@ -396,27 +406,52 @@ void MPEngine::_updateScene() {
     if( _keys[GLFW_KEY_D] ) {
         switch(_cameraIndex) {
             case(0):
-                if(_modelChoice == 0) _motorcycle->rotate(1.0f);
-
-                else if(_modelChoice == 1) _bobomb->rotateBobomb(GLFW_KEY_D);
+                if(_modelChoice == 0){
+                    _motorcycle->rotate(1.0f);
+                    if(firstPersonOn){
+                        _firstPersonCam->setTheta(-_motorcycle->getAngle() + (5 * M_PI_2 + M_PI_4 - .2));
+                        _firstPersonCam->recomputeOrientation();
+                    }
+                }
+                else if(_modelChoice == 1){
+                    _bobomb->rotateBobomb(GLFW_KEY_D);
+                    if(firstPersonOn){
+                        _firstPersonCam->setTheta(-_bobomb->getDirection());
+                        _firstPersonCam->recomputeOrientation();
+                    }
+                }
                 break;
             case(1):
                 _freeCam->rotate(.02f, 0.0f);
                 break;
+
         }
     }
     // turn left
     if( _keys[GLFW_KEY_A] ) {
         switch(_cameraIndex) {
             case(0):
-                if(_modelChoice == 0) _motorcycle->rotate(-1.0f);
+                if(_modelChoice == 0){
+                    _motorcycle->rotate(-1.0f);
+                    if(firstPersonOn){
+                        _firstPersonCam->setTheta(-_motorcycle->getAngle() + (5 * M_PI_2 + M_PI_4 - .15) );
+                        _firstPersonCam->recomputeOrientation();
+                    }
+                }
+                else if(_modelChoice == 1){
+                    _bobomb->rotateBobomb(GLFW_KEY_A);
+                    if(firstPersonOn){
+                        _firstPersonCam->setTheta(-_bobomb->getDirection());
+                        _firstPersonCam->recomputeOrientation();
+                    }
+                }
 
-                else if(_modelChoice == 1) _bobomb->rotateBobomb(GLFW_KEY_A);
                 break;
             case(1):
                 _freeCam->rotate(-.02f, 0.0f);
                 break;
         }
+
 
     }
     // move forward
@@ -428,11 +463,18 @@ void MPEngine::_updateScene() {
                     _motorcycle->driveForward();
                     _motorcycle->_checkBounds(WORLD_SIZE);
                     _arcballCam->setLookAtPoint(_motorcycle->getPosition());
+                    if(firstPersonOn){
+                        _firstPersonCam->setPosition(_motorcycle->getPosition() + _motorcycle->getCameraOffset());
+                        _firstPersonCam->recomputeOrientation();
+                    }
                 }
-
                 else if(_modelChoice == 1) {
                     _bobomb->driveForward(WORLD_SIZE);
                     _arcballCam->setLookAtPoint(_bobomb->getPosition());
+                    if(firstPersonOn){
+                        _firstPersonCam->setPosition(_bobomb->getPosition());
+                        _firstPersonCam->recomputeOrientation();
+                    }
                 }
 
                 _arcballCam->recomputeOrientation();
@@ -451,10 +493,18 @@ void MPEngine::_updateScene() {
                     _motorcycle->driveBackward();
                     _motorcycle->_checkBounds(WORLD_SIZE);
                     _arcballCam->setLookAtPoint(_motorcycle->getPosition());
+                    if(firstPersonOn){
+                        _firstPersonCam->setPosition(_motorcycle->getPosition() + _motorcycle->getCameraOffset());
+                        _firstPersonCam->recomputeOrientation();
+                    }
                 }
                 else if(_modelChoice == 1) {
                     _bobomb->driveBackward(WORLD_SIZE);
                     _arcballCam->setLookAtPoint(_bobomb->getPosition());
+                    if(firstPersonOn){
+                        _firstPersonCam->setPosition(_bobomb->getPosition());
+                        _firstPersonCam->recomputeOrientation();
+                    }
                 }
 
                 _arcballCam->recomputeOrientation();
@@ -481,15 +531,17 @@ void MPEngine::run() {
         glfwGetFramebufferSize( _window, &framebufferWidth, &framebufferHeight );
 
         // update the viewport - tell OpenGL we want to render to the whole window
-        glViewport( 0, 0, framebufferWidth, framebufferHeight );
 
         // set the projection matrix based on the window size
         // use a perspective projection that ranges
         // with a FOV of 45 degrees, for our current aspect ratio, and Z ranges from [0.001, 1000].
         glm::mat4 projectionMatrix = glm::perspective( 45.0f, (GLfloat) framebufferWidth / (GLfloat) framebufferHeight, 0.001f, 1000.0f );
+        glm::mat4 viewMatrix (1.0f);
+
+        glViewport( 0, 0, framebufferWidth, framebufferHeight );
+
 
         // set up our look at matrix to position our camera
-        glm::mat4 viewMatrix (1.0f);
         switch(_cameraIndex) {
             case(0):
                 viewMatrix = _arcballCam->getViewMatrix();
@@ -501,6 +553,17 @@ void MPEngine::run() {
 
         // draw everything to the window
         _renderScene(viewMatrix, projectionMatrix);
+
+        glClear( GL_DEPTH_BUFFER_BIT );	// clear the current color contents and depth buffer in the window
+
+        if(firstPersonOn) {
+            viewMatrix = _firstPersonCam->getViewMatrix();
+            glViewport(framebufferWidth / (double)3 * 2, framebufferHeight / (double)3 * 2, framebufferWidth, framebufferHeight);
+            _drawFirstPerson(viewMatrix, projectionMatrix);
+        }
+
+
+
 
         _updateScene();
 
@@ -540,6 +603,63 @@ void MPEngine::_changeCamera(bool up) {
             _cameraIndex--;
         }
     }
+}
+
+void MPEngine::_drawFirstPerson(glm::mat4 viewMtx, glm::mat4 projMtx) {
+    _lightingShaderProgram->useProgram();
+
+    //// BEGIN DRAWING THE GROUND PLANE ////
+    // draw the ground plane
+    glm::mat4 groundModelMtx = glm::scale( glm::mat4(1.0f), glm::vec3(WORLD_SIZE, 1.0f, WORLD_SIZE));
+    _computeAndSendMatrixUniforms(groundModelMtx, viewMtx, projMtx);
+
+    glm::vec3 groundColor(0.3f, 0.8f, 0.2f);
+    glUniform3fv(_lightingShaderUniformLocations.materialColor, 1, &groundColor[0]);
+
+    glBindVertexArray(_groundVAO);
+    glDrawElements(GL_TRIANGLE_STRIP, _numGroundPoints, GL_UNSIGNED_SHORT, (void*)0);
+    //// END DRAWING THE GROUND PLANE ////
+
+    //// BEGIN DRAWING THE BUILDINGS ////
+    for( const BuildingData& currentBuilding : _buildings ) {
+        _computeAndSendMatrixUniforms(currentBuilding.modelMatrix, viewMtx, projMtx);
+
+        glUniform3fv(_lightingShaderUniformLocations.materialColor, 1, &currentBuilding.color[0]);
+
+        CSCI441::drawSolidCube(1.0);
+    }
+
+    for( TreeData currentTree : _trees){
+        _computeAndSendMatrixUniforms(currentTree.modelMatrix, viewMtx, projMtx);
+
+        glUniform3fv(_lightingShaderUniformLocations.materialColor, 1, &currentTree.treeColor[0]);
+        CSCI441::drawSolidCylinder(0.5f, 0.5f, currentTree.leafTranslate.y, 2, 4);
+
+        currentTree.modelMatrix = glm::translate(currentTree.modelMatrix, currentTree.leafTranslate);
+        _computeAndSendMatrixUniforms(currentTree.modelMatrix, viewMtx, projMtx);
+
+        glUniform3fv(_lightingShaderUniformLocations.materialColor, 1, &currentTree.leafColor[0]);
+        CSCI441::drawSolidCone(.75f,2,2,4);
+
+
+    }
+    //// END DRAWING THE BUILDINGS AND TREES////
+    //// BEGIN DRAWING THE MOTORCYCLE ////
+    glm::mat4 modelMtx(1.0f);
+    glm::mat4 motorcycleModelMtx(1.0f);
+
+    motorcycleModelMtx = glm::translate(motorcycleModelMtx, _motorcycle->getPosition());
+    _motorcycle->drawMotorcycle(motorcycleModelMtx, viewMtx, projMtx);
+    //// END DRAWING THE MOTORCYCLE ////
+    glm::mat4 modelBobombMtx(1.0f);
+    //// BEGIN DRAWING THE HERO ////
+    // model translated relative to stored hero position coordinates.
+    modelBobombMtx = glm::translate(modelBobombMtx, glm::vec3(_bobomb->getPosition().x, _bobomb->getPosition().y,
+                                                              _bobomb->getPosition().z));
+    // model rotated relative to stored direction angle
+    modelBobombMtx = glm::rotate(modelBobombMtx, _bobomb->getDirection(), CSCI441::Y_AXIS);
+    _bobomb->drawBobomb(modelBobombMtx, viewMtx, projMtx);
+    //// END DRAWING THE HERO ////
 }
 
 //*************************************************************************************

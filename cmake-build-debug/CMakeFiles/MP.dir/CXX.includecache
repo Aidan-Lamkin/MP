@@ -42,6 +42,16 @@ GL/glew.h
 glm/glm.hpp
 -
 
+/Users/aidan/Documents/CSCI_441/MP/motorcycle.cpp
+motorcycle.hpp
+/Users/aidan/Documents/CSCI_441/MP/motorcycle.hpp
+glm/gtc/matrix_transform.hpp
+-
+CSCI441/objects.hpp
+-
+CSCI441/OpenGLUtils.hpp
+-
+
 /Users/aidan/Documents/CSCI_441/MP/motorcycle.hpp
 GL/glew.h
 -
