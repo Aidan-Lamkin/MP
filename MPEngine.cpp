@@ -173,7 +173,7 @@ void MPEngine::_setupBuffers() {
                          _lightingShaderUniformLocations.normalMatrix,
                          _lightingShaderUniformLocations.materialColor);
     // initialize bobomb Position
-    _bobomb->setPosition(glm::vec3(0.0f,0.0f,0.0f));
+    _bobomb->setPosition(glm::vec3(2.0f,0.0f,0.0f));
 
     _createGroundBuffers();
     _generateEnvironment();
@@ -357,35 +357,22 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 
     }
     //// END DRAWING THE BUILDINGS AND TREES////
-    if(_modelChoice == 0) {
-        //// BEGIN DRAWING THE MOTORCYCLE ////
-        glm::mat4 modelMtx(1.0f);
-        glm::mat4 arcballModelMtx(1.0f);
-        switch (_cameraIndex) {
-            case (0):
-                arcballModelMtx = glm::translate(arcballModelMtx, _arcballCam->getLookAtPoint());
-                _motorcycle->drawMotorcycle(arcballModelMtx, viewMtx, projMtx);
-                break;
-            case (1):
-                _motorcycle->drawMotorcycle(arcballModelMtx, viewMtx, projMtx);
-                modelMtx = glm::translate(modelMtx, _freeCam->getPosition());
-                modelMtx = glm::rotate(modelMtx, -_freeCam->getTheta(), CSCI441::Y_AXIS);
-                modelMtx = glm::rotate(modelMtx, _freeCam->getPhi(), CSCI441::X_AXIS);
-                break;
-        }
-    }
+    //// BEGIN DRAWING THE MOTORCYCLE ////
+    glm::mat4 modelMtx(1.0f);
+    glm::mat4 motorcycleModelMtx(1.0f);
+
+    motorcycleModelMtx = glm::translate(motorcycleModelMtx, _motorcycle->getPosition());
+    _motorcycle->drawMotorcycle(motorcycleModelMtx, viewMtx, projMtx);
     //// END DRAWING THE MOTORCYCLE ////
-    else if(_modelChoice == 1) {
-        //// BEGIN DRAWING THE HERO ////
-        glm::mat4 modelMtx(1.0f);
-        // model translated relative to stored hero position coordinates.
-        modelMtx = glm::translate(modelMtx, glm::vec3(_bobomb->getPosition().x, _bobomb->getPosition().y,
-                                                      _bobomb->getPosition().z));
-        // model rotated relative to stored direction angle
-        modelMtx = glm::rotate(modelMtx, _bobomb->getDirection(), CSCI441::Y_AXIS);
-        _bobomb->drawBobomb(modelMtx, viewMtx, projMtx);
-        //// END DRAWING THE HERO ////
-    }
+    glm::mat4 modelBobombMtx(1.0f);
+    //// BEGIN DRAWING THE HERO ////
+    // model translated relative to stored hero position coordinates.
+    modelBobombMtx = glm::translate(modelBobombMtx, glm::vec3(_bobomb->getPosition().x, _bobomb->getPosition().y,
+                                                  _bobomb->getPosition().z));
+    // model rotated relative to stored direction angle
+    modelBobombMtx = glm::rotate(modelBobombMtx, _bobomb->getDirection(), CSCI441::Y_AXIS);
+    _bobomb->drawBobomb(modelBobombMtx, viewMtx, projMtx);
+    //// END DRAWING THE HERO ////
 }
 
 void MPEngine::_updateScene() {
