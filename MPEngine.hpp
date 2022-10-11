@@ -7,6 +7,7 @@
 
 #include "motorcycle.hpp"
 #include "bobomb.hpp"
+#include "robot.hpp"
 #include "ArcBallCam.hpp"
 
 #include <vector>
@@ -86,6 +87,8 @@ private:
     /// \desc our bobomb model
     Bobomb* _bobomb;
 
+    /// \desc our robot model
+    Robot* _robot;
 
     /// \desc the size of the world (controls the ground size and locations of buildings)
     static constexpr GLfloat WORLD_SIZE = 55.0f;

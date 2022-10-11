@@ -72,6 +72,9 @@ void MPEngine::handleKeyEvent(GLint key, GLint action) {
                 break;
             case GLFW_KEY_3:
                 _modelChoice = 2;
+                _arcballCam->setPosition(_robot->getPosition()+_robot->cameraOffset());
+                _arcballCam->setLookAtPoint(_robot->getPosition()+_robot->cameraOffset());
+                _arcballCam->recomputeOrientation();
                 break;
             case GLFW_KEY_4:
                 firstPersonOn = !firstPersonOn;
@@ -163,6 +166,7 @@ void MPEngine::_setupShaders() {
 }
 
 void MPEngine::_setupBuffers() {
+    CSCI441::ModelLoader::enableAutoGenerateNormals();
     CSCI441::setVertexAttributeLocations( _lightingShaderAttributeLocations.vPos, _lightingShaderAttributeLocations.vNormal);
 
     //create motorcycle
@@ -175,9 +179,13 @@ void MPEngine::_setupBuffers() {
                          _lightingShaderUniformLocations.mvpMatrix,
                          _lightingShaderUniformLocations.normalMatrix,
                          _lightingShaderUniformLocations.materialColor);
+    _robot = new Robot(_lightingShaderProgram->getShaderProgramHandle(),
+                         _lightingShaderUniformLocations.mvpMatrix,
+                         _lightingShaderUniformLocations.normalMatrix,
+                         _lightingShaderUniformLocations.materialColor);
     // initialize bobomb Position
     _bobomb->setPosition(glm::vec3(2.0f,0.0f,0.0f));
-
+    _robot->setPosition(glm::vec3(4.0f,0.0f,0.0f));
     _createGroundBuffers();
     _generateEnvironment();
 }
@@ -383,10 +391,18 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
     _bobomb->drawBobomb(modelBobombMtx, viewMtx, projMtx);
 
     //// END DRAWING THE HERO ////
+
+    //// BEGIN DRAWING THE ROBOT ////
+    glm::mat4 robotModelMtx(1.0f);
+    robotModelMtx = glm::translate(robotModelMtx, _robot->getPosition());
+    _robot->drawRobot(robotModelMtx, viewMtx, projMtx);
+    //// END DRAWING THE ROBOT ////
+
 }
 
 void MPEngine::_updateScene() {
     _bobomb->_updateFlicker();
+    _robot->idleMotion();
     // turn right
     if(_keys[GLFW_KEY_SPACE]){
         switch(_cameraIndex){
@@ -420,6 +436,13 @@ void MPEngine::_updateScene() {
                         _firstPersonCam->recomputeOrientation();
                     }
                 }
+                else if(_modelChoice == 2){
+                    _robot->rotate(-0.0523599);
+                    if(firstPersonOn){
+                        _firstPersonCam->setTheta(-_robot->getAngle());
+                        _firstPersonCam->recomputeOrientation();
+                    }
+                }
                 break;
             case(1):
                 _freeCam->rotate(.02f, 0.0f);
@@ -442,6 +465,13 @@ void MPEngine::_updateScene() {
                     _bobomb->rotateBobomb(GLFW_KEY_A);
                     if(firstPersonOn){
                         _firstPersonCam->setTheta(-_bobomb->getDirection());
+                        _firstPersonCam->recomputeOrientation();
+                    }
+                }
+                else if(_modelChoice == 2){
+                    _robot->rotate(0.0523599);
+                    if(firstPersonOn){
+                        _firstPersonCam->setTheta(-_robot->getAngle());
                         _firstPersonCam->recomputeOrientation();
                     }
                 }
@@ -476,6 +506,14 @@ void MPEngine::_updateScene() {
                         _firstPersonCam->recomputeOrientation();
                     }
                 }
+                else if(_modelChoice == 2) {
+                    _robot->moveForward(WORLD_SIZE);
+                    _arcballCam->setLookAtPoint(_robot->getPosition()+_robot->cameraOffset());
+                    if(firstPersonOn){
+                        _firstPersonCam->setPosition(_robot->getPosition()+_robot->cameraOffset());
+                        _firstPersonCam->recomputeOrientation();
+                    }
+                }
 
                 _arcballCam->recomputeOrientation();
                 break;
@@ -503,6 +541,14 @@ void MPEngine::_updateScene() {
                     _arcballCam->setLookAtPoint(_bobomb->getPosition());
                     if(firstPersonOn){
                         _firstPersonCam->setPosition(_bobomb->getPosition());
+                        _firstPersonCam->recomputeOrientation();
+                    }
+                }
+                else if(_modelChoice == 2) {
+                    _robot->moveBackwards(WORLD_SIZE);
+                    _arcballCam->setLookAtPoint(_robot->getPosition()+_robot->cameraOffset());
+                    if(firstPersonOn){
+                        _firstPersonCam->setPosition(_robot->getPosition()+_robot->cameraOffset());
                         _firstPersonCam->recomputeOrientation();
                     }
                 }
@@ -660,6 +706,12 @@ void MPEngine::_drawFirstPerson(glm::mat4 viewMtx, glm::mat4 projMtx) {
     modelBobombMtx = glm::rotate(modelBobombMtx, _bobomb->getDirection(), CSCI441::Y_AXIS);
     _bobomb->drawBobomb(modelBobombMtx, viewMtx, projMtx);
     //// END DRAWING THE HERO ////
+
+    //// BEGIN DRAWING THE ROBOT ////
+    glm::mat4 robotModelMtx(1.0f);
+    robotModelMtx = glm::translate(robotModelMtx, _robot->getPosition());
+    _robot->drawRobot(robotModelMtx, viewMtx, projMtx);
+    //// END DRAWING THE ROBOT ////
 }
 
 //*************************************************************************************
