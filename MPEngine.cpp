@@ -328,6 +328,8 @@ void MPEngine::_cleanupBuffers() {
 
     fprintf( stdout, "[INFO]: ...deleting models..\n" );
     delete _motorcycle;
+    delete _bobomb;
+    delete _robot;
 }
 
 //*************************************************************************************
@@ -432,7 +434,7 @@ void MPEngine::_updateScene() {
                 else if(_modelChoice == 1){
                     _bobomb->rotateBobomb(GLFW_KEY_D);
                     if(firstPersonOn){
-                        _firstPersonCam->setTheta(-_bobomb->getDirection());
+                        _firstPersonCam->setTheta( -_bobomb->getDirection() + glm::radians(200.0f) );
                         _firstPersonCam->recomputeOrientation();
                     }
                 }
@@ -464,7 +466,7 @@ void MPEngine::_updateScene() {
                 else if(_modelChoice == 1){
                     _bobomb->rotateBobomb(GLFW_KEY_A);
                     if(firstPersonOn){
-                        _firstPersonCam->setTheta(-_bobomb->getDirection());
+                        _firstPersonCam->setTheta(-_bobomb->getDirection() + glm::radians(200.0f));
                         _firstPersonCam->recomputeOrientation();
                     }
                 }
@@ -502,7 +504,7 @@ void MPEngine::_updateScene() {
                     _bobomb->driveForward(WORLD_SIZE);
                     _arcballCam->setLookAtPoint(_bobomb->getPosition());
                     if(firstPersonOn){
-                        _firstPersonCam->setPosition(_bobomb->getPosition());
+                        _firstPersonCam->setPosition(_bobomb->getPosition() + glm::vec3(0.0f,1.2f,0.0f));
                         _firstPersonCam->recomputeOrientation();
                     }
                 }
@@ -540,7 +542,7 @@ void MPEngine::_updateScene() {
                     _bobomb->driveBackward(WORLD_SIZE);
                     _arcballCam->setLookAtPoint(_bobomb->getPosition());
                     if(firstPersonOn){
-                        _firstPersonCam->setPosition(_bobomb->getPosition());
+                        _firstPersonCam->setPosition(_bobomb->getPosition() + glm::vec3(0.0f,1.2f,0.0f));
                         _firstPersonCam->recomputeOrientation();
                     }
                 }
