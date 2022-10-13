@@ -553,7 +553,7 @@ void MPEngine::_updateScene() {
                     _robot->moveForward(WORLD_SIZE);
                     _arcballCam->setLookAtPoint(_robot->getPosition()+_robot->cameraOffset());
                     if(firstPersonOn){
-                        _firstPersonCam->setPosition(_robot->getPosition()+_robot->cameraOffset());
+                        _firstPersonCam->setPosition(_robot->getPosition()+_robot->cameraOffsetFirstPerson());
                         _firstPersonCam->recomputeOrientation();
                     }
                 }
@@ -591,7 +591,7 @@ void MPEngine::_updateScene() {
                     _robot->moveBackwards(WORLD_SIZE);
                     _arcballCam->setLookAtPoint(_robot->getPosition()+_robot->cameraOffset());
                     if(firstPersonOn){
-                        _firstPersonCam->setPosition(_robot->getPosition()+_robot->cameraOffset());
+                        _firstPersonCam->setPosition(_robot->getPosition()+_robot->cameraOffsetFirstPerson());
                         _firstPersonCam->recomputeOrientation();
                     }
                 }

@@ -25,7 +25,7 @@ Robot::Robot(GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint norm
      * Switch scaling down below
     */
     _modelBody = new CSCI441::ModelLoader();
-    _modelBody->loadModelFile( "models/Robot.obj" );
+    _modelBody->loadModelFile( "models/RobotReduced.obj" );
     _modelBody->setAttributeLocations(_shaderProgramAttributeLocations.vPos, _shaderProgramAttributeLocations.vNormal);
 
 
@@ -54,7 +54,7 @@ void Robot::drawRobot(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx) 
     modelMtx = glm::rotate( modelMtx, _rotation, glm::vec3(0.0,1.0,0.0) );
     modelMtx = glm::translate( modelMtx, glm::vec3(-0.4,0.0,-0.456) );
     _drawBody(modelMtx, viewMtx, projMtx);
-    //_drawCubeStack(modelMtx, viewMtx, projMtx);
+    _drawCubeStack(modelMtx, viewMtx, projMtx);
 }
 
 void Robot::_drawBody(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx) const {
@@ -89,7 +89,9 @@ glm::vec3 Robot::getPosition(){
 glm::vec3 Robot::cameraOffset(){
     return glm::vec3(0.4,0.2,0.456);
 }
-
+glm::vec3 Robot::cameraOffsetFirstPerson(){
+    return glm::vec3(0.,1.3,0.0);
+}
 void Robot::setPosition(glm::vec3 newPosition){
     _position = newPosition;
 }
@@ -99,21 +101,15 @@ void Robot::rotate(float radians){
 }
 
 float Robot::getAngle(){
-    return _rotation;
+    return (_rotation - 3.398112);
 }
 
 void Robot::moveForward(GLfloat worldSize){
-//    _boxX+=_speed*sin(_rotation);
-//    _boxZ+=_speed*cos(_rotation);
-//    std::cout << "x: " << _boxX << "    z: " << _boxZ << std::endl;
     _position.x+=_speed*sin(_rotation);
     _position.z+=_speed*cos(_rotation);
     _checkBounds(worldSize);
 }
 void Robot::moveBackwards(GLfloat worldSize){
-//    _boxX-=_speed*sin(_rotation);
-//    _boxZ-=_speed*cos(_rotation);
-//    std::cout << "x: " << _boxX << "    z: " << _boxZ << std::endl;
     _position.x-=_speed*sin(_rotation);
     _position.z-=_speed*cos(_rotation);
     _checkBounds(worldSize);

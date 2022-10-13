@@ -23,6 +23,7 @@ public:
     void moveBackwards(GLfloat worldSize);
     void idleMotion();
     glm::vec3 cameraOffset();
+    glm::vec3 cameraOffsetFirstPerson();
 private:
     float _speed;
     float _boxX;
