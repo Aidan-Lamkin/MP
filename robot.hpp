@@ -44,7 +44,9 @@ private:
 
     struct ShaderProgramAttributeLocations {
         GLint vPos;
-
+        GLint vNormal;
+//        GLint vPosCube;
+//        GLint vNormalCube;
     } _shaderProgramAttributeLocations;
 
 

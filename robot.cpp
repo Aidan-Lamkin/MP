@@ -23,16 +23,20 @@ Robot::Robot(GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint norm
      * Switch scaling down below
     */
     _modelBody = new CSCI441::ModelLoader();
+    _modelBody->enableAutoGenerateNormals();
     _modelBody->loadModelFile( "models/Cube.obj" );
     _modelBody->setAttributeLocations(_shaderProgramAttributeLocations.vPos);
+    _modelBody->setAttributeLocations(_shaderProgramAttributeLocations.vNormal);
 
 
 
 
 
     _modelCube = new CSCI441::ModelLoader();
+    _modelCube->enableAutoGenerateNormals();
     _modelCube->loadModelFile( "models/Cube.obj" );
     _modelCube->setAttributeLocations(_shaderProgramAttributeLocations.vPos);
+    _modelCube->setAttributeLocations(_shaderProgramAttributeLocations.vNormal);
 
     _position = glm::vec3(0.0f,0.0f,0.0f);
     _boxX = 0.29;
@@ -61,7 +65,7 @@ void Robot::_drawBody(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx) 
     /*
      * Change from 0.03 to 0.001 for models/Robot.obj
     */
-     modelMtx = glm::scale( modelMtx, glm::vec3(0.03,0.03,0.03) );
+     modelMtx = glm::scale( modelMtx, glm::vec3(0.001,0.001,0.001) );
     _computeAndSendMatrixUniforms(modelMtx, viewMtx, projMtx);
 
     glm::vec3 modelColor = glm::vec3(1.0,1.0,1.0);

@@ -2,10 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "MP.exe"
-		},
-		{
-			"path" : "MP.pdb"
+			"path" : "MP"
 		}
 	],
 	"backtrace" : 1,
@@ -36,19 +33,19 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 13,
+				"line" : 20,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 14,
+				"line" : 21,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 11,
+				"line" : 18,
 				"parent" : 0
 			}
 		]
@@ -59,7 +56,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g"
+					"fragment" : "-g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.1.sdk"
 				},
 				{
 					"fragment" : "-std=gnu++17"
@@ -69,7 +66,7 @@
 			[
 				{
 					"backtrace" : 4,
-					"path" : "Z:/CSCI441/include"
+					"path" : "/usr/local/include"
 				}
 			],
 			"language" : "CXX",
@@ -106,12 +103,31 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LZ:\\CSCI441\\lib",
+				"fragment" : "-L/usr/local/lib",
 				"role" : "libraryPath"
 			},
 			{
+				"fragment" : "-Wl,-rpath,/usr/local/lib",
+				"role" : "libraries"
+			},
+			{
 				"backtrace" : 3,
-				"fragment" : "-lopengl32",
+				"fragment" : "-framework OpenGL",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-framework Cocoa",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-framework IOKit",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-framework CoreVideo",
 				"role" : "libraries"
 			},
 			{
@@ -121,23 +137,14 @@
 			},
 			{
 				"backtrace" : 3,
-				"fragment" : "-lglew32",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lgdi32",
-				"role" : "libraries"
-			},
-			{
-				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
+				"fragment" : "-lglew",
 				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
 	"name" : "MP",
-	"nameOnDisk" : "MP.exe",
+	"nameOnDisk" : "MP",
 	"paths" : 
 	{
 		"build" : ".",

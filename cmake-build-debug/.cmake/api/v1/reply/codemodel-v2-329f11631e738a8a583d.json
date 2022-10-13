@@ -6,7 +6,6 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.14"
@@ -39,7 +38,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "MP::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-MP-Debug-254e7d24caa50dba57cb.json",
+					"jsonFile" : "target-MP-Debug-5b177cc8a41cc5fbbc70.json",
 					"name" : "MP",
 					"projectIndex" : 0
 				}
@@ -49,12 +48,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "C:/Users/Heather/Desktop/Tutor/MP/cmake-build-debug",
-		"source" : "C:/Users/Heather/Desktop/Tutor/MP"
+		"build" : "/Users/aidan/Documents/CSCI_441/MP/cmake-build-debug",
+		"source" : "/Users/aidan/Documents/CSCI_441/MP"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 4
+		"minor" : 2
 	}
 }

@@ -147,6 +147,7 @@ void MPEngine::_setupGLFW() {
 void MPEngine::_setupOpenGL() {
     glEnable( GL_DEPTH_TEST );					                        // enable depth testing
     glDepthFunc( GL_LESS );							                // use less than depth test
+    glEnable(GL_SCISSOR_TEST);
 
     glEnable(GL_BLEND);									            // enable blending
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	    // use one minus blending equation
@@ -608,13 +609,15 @@ void MPEngine::run() {
     //	window will display once and then the program exits.
     while( !glfwWindowShouldClose(_window) ) {	        // check if the window was instructed to be closed
         glDrawBuffer( GL_BACK );				        // work with our back frame buffer
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );	// clear the current color contents and depth buffer in the window
-
         // Get the size of our framebuffer.  Ideally this should be the same dimensions as our window, but
         // when using a Retina display the actual window can be larger than the requested window.  Therefore,
         // query what the actual size of the window we are rendering to is.
         GLint framebufferWidth, framebufferHeight;
         glfwGetFramebufferSize( _window, &framebufferWidth, &framebufferHeight );
+        glScissor(0, 0, framebufferWidth, framebufferHeight );
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );	// clear the current color contents and depth buffer in the window
+
+
 
         // update the viewport - tell OpenGL we want to render to the whole window
 
@@ -643,8 +646,10 @@ void MPEngine::run() {
         glClear( GL_DEPTH_BUFFER_BIT );	// clear the current color contents and depth buffer in the window
 
         if(firstPersonOn) {
-            viewMatrix = _firstPersonCam->getViewMatrix();
             glViewport(framebufferWidth / (double)3 * 2, framebufferHeight / (double)3 * 2, framebufferWidth, framebufferHeight);
+            glScissor(framebufferWidth / (double)3 * 2, framebufferHeight / (double)3 * 2, framebufferWidth, framebufferHeight);
+            glClear(GL_COLOR_BUFFER_BIT);
+            viewMatrix = _firstPersonCam->getViewMatrix();
             _drawFirstPerson(viewMatrix, projectionMatrix);
         }
 
