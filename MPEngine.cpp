@@ -197,7 +197,9 @@ void MPEngine::_setupBuffers() {
                          _lightingShaderUniformLocations.mvpMatrix,
                          _lightingShaderUniformLocations.normalMatrix,
                          _lightingShaderUniformLocations.materialColor,
-                       _lightingShaderUniformLocations.modelMtx);
+                       _lightingShaderUniformLocations.modelMtx,
+                       _lightingShaderAttributeLocations.vPos,
+                       _lightingShaderAttributeLocations.vNormal);
     // initialize bobomb Position
     _bobomb->setPosition(glm::vec3(2.0f,0.0f,0.0f));
     _robot->setPosition(glm::vec3(4.0f,0.0f,0.0f));

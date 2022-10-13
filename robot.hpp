@@ -12,7 +12,7 @@
 
 class Robot{
 public:
-    Robot( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint normalMtxUniformLocation, GLint materialColorUniformLocation, GLint modelMtxUniformLocation );
+    Robot( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint normalMtxUniformLocation, GLint materialColorUniformLocation, GLint modelMtxUniformLocation, GLint vPosAttributeLocation, GLint vNormalAttributeLocation );
     void drawRobot(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx);
     glm::vec3 getPosition();
     void setPosition(glm::vec3 newPosition);
@@ -45,8 +45,6 @@ private:
     struct ShaderProgramAttributeLocations {
         GLint vPos;
         GLint vNormal;
-//        GLint vPosCube;
-//        GLint vNormalCube;
     } _shaderProgramAttributeLocations;
 
 

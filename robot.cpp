@@ -10,33 +10,31 @@
 #include <cmath>
 
 //constructor
-Robot::Robot(GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint normalMtxUniformLocation,GLint materialColorUniformLocation, GLint modelMtxUniformLocation) {
+Robot::Robot(GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint normalMtxUniformLocation,GLint materialColorUniformLocation, GLint modelMtxUniformLocation, GLint vPosAttributeLocation, GLint vNormalAttributeLocation) {
     CSCI441::ModelLoader::enableAutoGenerateNormals();
     _shaderProgramHandle = shaderProgramHandle;
     _shaderProgramUniformLocations.mvpMtx = mvpMtxUniformLocation;
     _shaderProgramUniformLocations.modelMtx = modelMtxUniformLocation;
     _shaderProgramUniformLocations.normalMtx = normalMtxUniformLocation;
     _shaderProgramUniformLocations.materialColor = materialColorUniformLocation;
+    _shaderProgramAttributeLocations.vPos = vPosAttributeLocation;
+    _shaderProgramAttributeLocations.vNormal = vNormalAttributeLocation;
     /*
      * Switch Robot with Cube for fast loading model
      * Switch back for detailed model
      * Switch scaling down below
     */
     _modelBody = new CSCI441::ModelLoader();
-    _modelBody->enableAutoGenerateNormals();
-    _modelBody->loadModelFile( "models/Cube.obj" );
-    _modelBody->setAttributeLocations(_shaderProgramAttributeLocations.vPos);
-    _modelBody->setAttributeLocations(_shaderProgramAttributeLocations.vNormal);
+    _modelBody->loadModelFile( "models/Robot.obj" );
+    _modelBody->setAttributeLocations(_shaderProgramAttributeLocations.vPos, _shaderProgramAttributeLocations.vNormal);
 
 
 
 
 
     _modelCube = new CSCI441::ModelLoader();
-    _modelCube->enableAutoGenerateNormals();
     _modelCube->loadModelFile( "models/Cube.obj" );
-    _modelCube->setAttributeLocations(_shaderProgramAttributeLocations.vPos);
-    _modelCube->setAttributeLocations(_shaderProgramAttributeLocations.vNormal);
+    _modelCube->setAttributeLocations(_shaderProgramAttributeLocations.vPos, _shaderProgramAttributeLocations.vNormal);
 
     _position = glm::vec3(0.0f,0.0f,0.0f);
     _boxX = 0.29;
@@ -56,7 +54,7 @@ void Robot::drawRobot(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx) 
     modelMtx = glm::rotate( modelMtx, _rotation, glm::vec3(0.0,1.0,0.0) );
     modelMtx = glm::translate( modelMtx, glm::vec3(-0.4,0.0,-0.456) );
     _drawBody(modelMtx, viewMtx, projMtx);
-    _drawCubeStack(modelMtx, viewMtx, projMtx);
+    //_drawCubeStack(modelMtx, viewMtx, projMtx);
 }
 
 void Robot::_drawBody(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx) const {
