@@ -137,6 +137,10 @@ private:
         GLint lightDirection;
         GLint normalMatrix;
         GLint modelMtx;
+        GLint spotLightPosition;
+        GLint spotLightColor;
+        GLfloat spotLightPhi;
+        GLint spotLightDirection;
     } _lightingShaderUniformLocations;
     /// \desc stores the locations of all of our shader attributes
     struct LightingShaderAttributeLocations {

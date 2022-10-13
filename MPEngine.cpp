@@ -165,6 +165,11 @@ void MPEngine::_setupShaders() {
     _lightingShaderUniformLocations.pointLightPosition = _lightingShaderProgram->getUniformLocation("pointLightPosition");
     _lightingShaderUniformLocations.modelMtx = _lightingShaderProgram->getUniformLocation("modelMtx");
 
+    _lightingShaderUniformLocations.spotLightPosition = _lightingShaderProgram->getUniformLocation("spotLightPosition");
+    _lightingShaderUniformLocations.spotLightColor = _lightingShaderProgram->getUniformLocation("spotLightColor");
+    _lightingShaderUniformLocations.spotLightPhi = _lightingShaderProgram->getUniformLocation("spotLightPhi");
+    _lightingShaderUniformLocations.spotLightDirection = _lightingShaderProgram->getUniformLocation("spotLightDirection");
+
     _lightingShaderUniformLocations.normalMatrix = _lightingShaderProgram->getUniformLocation("normalMatrix");
     _lightingShaderAttributeLocations.vPos = _lightingShaderProgram->getAttributeLocation("vPos");
     _lightingShaderAttributeLocations.vNormal = _lightingShaderProgram->getAttributeLocation("vNormal");
@@ -314,12 +319,12 @@ void MPEngine::_setupScene() {
     glm::vec3 lightDirection = glm::vec3(-1,-1,-1);
 
     glm::vec3 pointLightColor = glm::vec3(1,1,1);
-    glm::vec3 pointLightPosition = glm::vec3(-10,10,-10);
+    glm::vec3 pointLightPosition = glm::vec3(-10,1,-10);
 
     glm::vec3 spotLightColor = glm::vec3(1,1,1);
-    glm::vec3 spotLightPosition = glm::vec3(-10,10,-10); //
-    float spotLightPhi = 0.1 //Cutoff angle
-    glm::vec3 spotLightDirection = glm::vec3(1,1,1); //Vector to look down
+    glm::vec3 spotLightPosition = glm::vec3(0,5,0); //
+    float spotLightPhi = 0.0872665; //Cutoff angle
+    glm::vec3 spotLightDirection = glm::vec3(0,1,0); //Vector to look down
 
     glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
                         _lightingShaderUniformLocations.lightColor,1,&lightColor[0]);
@@ -330,6 +335,15 @@ void MPEngine::_setupScene() {
                         _lightingShaderUniformLocations.pointLightColor,1,&pointLightColor[0]);
     glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
                         _lightingShaderUniformLocations.pointLightPosition,1,&pointLightPosition[0]);
+
+    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
+                        _lightingShaderUniformLocations.spotLightColor,1,&spotLightColor[0]);
+    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
+                        _lightingShaderUniformLocations.spotLightPosition,1,&spotLightPosition[0]);
+    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
+                        _lightingShaderUniformLocations.spotLightPhi,1,&spotLightPhi);
+    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
+                        _lightingShaderUniformLocations.spotLightDirection,1,&spotLightDirection[0]);
 
 }
 

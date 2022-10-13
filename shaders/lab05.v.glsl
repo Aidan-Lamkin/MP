@@ -7,8 +7,15 @@ uniform vec3 lightColor;
 uniform vec3 lightDirection;
 uniform vec3 pointLightColor;
 uniform vec3 pointLightPosition;
+
+uniform vec3 spotLightPosition;
+uniform vec3 spotLightColor;
+uniform float spotLightPhi;
+uniform vec3 spotLightDirection;
+
 uniform vec3 materialColor;             // the material color for our vertex (& whole object)
 uniform mat4 modelMtx;
+
 
 
 // attribute inputs
@@ -43,14 +50,24 @@ void main() {
     float z = reletivePosition[2];
     vec3 xyz = vec3(x,y,z);
     float pointLightDistance = sqrt(pow(x-pointLightPosition[0],2) + pow(y-pointLightPosition[1],2) + pow(z-pointLightPosition[2],2));
-    vec3 pointLightDirection = vec3(normalize(xyz-pointLightPosition));
-    vec3 pointDiffuse = lightColor*materialColor*max(dot(pointLightDirection, newNormalVector),0);
-    vec3 pointAmbiant = pointLightColor*materialColor*0.1;
+    vec3 pointLightDirection = vec3(normalize(-xyz+pointLightPosition));
+    vec3 pointDiffuse = pointLightColor*materialColor*max(dot(pointLightDirection, newNormalVector),0);
+    vec3 pointAmbiant = pointLightColor*materialColor*0.15;
     pointLight = pointDiffuse + pointAmbiant;
-    float pointAttenuation = 1.0/(1+pointLightDistance+pow(pointLightDistance,2));
+    float pointAttenuation = 1.0/(0.5+0.1*pointLightDistance+0.02*pow(pointLightDistance,2));
     pointLight = pointLight*pointAttenuation;
 
     //Spot Light
+    //Find vector between point and light;
+    vec3 spotLight = vec3(0,0,0);
+    vec3 newSpotDirection = normalize(-1 *spotLightDirection);
+    vec3 spotPointVector = vec3(normalize(spotLightPosition-xyz));
+    float angle = acos(float(dot(spotPointVector, newSpotDirection))/(length(spotPointVector)*length(newSpotDirection)));
+    if(angle<spotLightPhi){
+        vec3 spotDiffuse = spotLightColor*materialColor*max(dot(spotPointVector, newNormalVector),0);
+
+        spotLight = spotDiffuse;
+    }
 
     //Directional Light
     if(max(dot(newLightDirection, newNormalVector),0) >= _diffuseThreshA){
@@ -62,4 +79,5 @@ void main() {
     }
     else color = lightColor * materialColor * 0.3;
     color += pointLight;
+    color = spotLight;
 }
