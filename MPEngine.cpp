@@ -151,7 +151,7 @@ void MPEngine::_setupOpenGL() {
     glEnable(GL_BLEND);									            // enable blending
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	    // use one minus blending equation
 
-    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );	        // clear the frame buffer to black
+    glClearColor( 0.0f, 0.6f, 1.0f, 1.0f );	        // clear the frame buffer to black
 }
 
 void MPEngine::_setupShaders() {
@@ -160,6 +160,11 @@ void MPEngine::_setupShaders() {
     _lightingShaderUniformLocations.materialColor = _lightingShaderProgram->getUniformLocation("materialColor");
     _lightingShaderUniformLocations.lightColor = _lightingShaderProgram->getUniformLocation("lightColor");
     _lightingShaderUniformLocations.lightDirection = _lightingShaderProgram->getUniformLocation("lightDirection");
+
+    _lightingShaderUniformLocations.pointLightColor = _lightingShaderProgram->getUniformLocation("pointLightColor");
+    _lightingShaderUniformLocations.pointLightPosition = _lightingShaderProgram->getUniformLocation("pointLightPosition");
+    _lightingShaderUniformLocations.modelMtx = _lightingShaderProgram->getUniformLocation("modelMtx");
+
     _lightingShaderUniformLocations.normalMatrix = _lightingShaderProgram->getUniformLocation("normalMatrix");
     _lightingShaderAttributeLocations.vPos = _lightingShaderProgram->getAttributeLocation("vPos");
     _lightingShaderAttributeLocations.vNormal = _lightingShaderProgram->getAttributeLocation("vNormal");
@@ -173,16 +178,20 @@ void MPEngine::_setupBuffers() {
     _motorcycle = new Motorcycle(_lightingShaderProgram->getShaderProgramHandle(),
                        _lightingShaderUniformLocations.mvpMatrix,
                        _lightingShaderUniformLocations.normalMatrix,
-                       _lightingShaderUniformLocations.materialColor);
+                       _lightingShaderUniformLocations.materialColor,
+                                 _lightingShaderUniformLocations.modelMtx);
 
     _bobomb = new Bobomb(_lightingShaderProgram->getShaderProgramHandle(),
                          _lightingShaderUniformLocations.mvpMatrix,
                          _lightingShaderUniformLocations.normalMatrix,
-                         _lightingShaderUniformLocations.materialColor);
+                         _lightingShaderUniformLocations.materialColor,
+                         _lightingShaderUniformLocations.modelMtx);
+
     _robot = new Robot(_lightingShaderProgram->getShaderProgramHandle(),
                          _lightingShaderUniformLocations.mvpMatrix,
                          _lightingShaderUniformLocations.normalMatrix,
-                         _lightingShaderUniformLocations.materialColor);
+                         _lightingShaderUniformLocations.materialColor,
+                       _lightingShaderUniformLocations.modelMtx);
     // initialize bobomb Position
     _bobomb->setPosition(glm::vec3(2.0f,0.0f,0.0f));
     _robot->setPosition(glm::vec3(4.0f,0.0f,0.0f));
@@ -303,9 +312,24 @@ void MPEngine::_setupScene() {
 
     glm::vec3 lightColor = glm::vec3(1,1,1);
     glm::vec3 lightDirection = glm::vec3(-1,-1,-1);
-    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),_lightingShaderUniformLocations.lightColor,1,&lightColor[0]);
-    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),_lightingShaderUniformLocations.lightDirection,1,&lightDirection[0]);
 
+    glm::vec3 pointLightColor = glm::vec3(1,1,1);
+    glm::vec3 pointLightPosition = glm::vec3(-10,10,-10);
+
+    glm::vec3 spotLightColor = glm::vec3(1,1,1);
+    glm::vec3 spotLightPosition = glm::vec3(-10,10,-10); //
+    float spotLightPhi = 0.1 //Cutoff angle
+    glm::vec3 spotLightDirection = glm::vec3(1,1,1); //Vector to look down
+
+    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
+                        _lightingShaderUniformLocations.lightColor,1,&lightColor[0]);
+    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
+                        _lightingShaderUniformLocations.lightDirection,1,&lightDirection[0]);
+
+    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
+                        _lightingShaderUniformLocations.pointLightColor,1,&pointLightColor[0]);
+    glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
+                        _lightingShaderUniformLocations.pointLightPosition,1,&pointLightPosition[0]);
 
 }
 
@@ -629,7 +653,7 @@ void MPEngine::_computeAndSendMatrixUniforms(glm::mat4 modelMtx, glm::mat4 viewM
     glm::mat4 mvpMtx = projMtx * viewMtx * modelMtx;
     // then send it to the shader on the GPU to apply to every vertex
     _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.mvpMatrix, mvpMtx);
-
+    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.modelMtx, modelMtx);
     glm::mat3 normalMatrix = glm::mat3(glm::transpose(glm::inverse(modelMtx)));
     _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.normalMatrix, normalMatrix);
 }

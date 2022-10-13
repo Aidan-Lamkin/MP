@@ -131,10 +131,12 @@ private:
         GLint mvpMatrix;
         /// \desc material diffuse color location
         GLint materialColor;
+        GLint pointLightColor;
+        GLint pointLightPosition;
         GLint lightColor;
         GLint lightDirection;
         GLint normalMatrix;
-
+        GLint modelMtx;
     } _lightingShaderUniformLocations;
     /// \desc stores the locations of all of our shader attributes
     struct LightingShaderAttributeLocations {

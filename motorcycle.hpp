@@ -12,7 +12,7 @@
 
 class Motorcycle {
 public:
-    Motorcycle( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint normalMtxUniformLocation, GLint materialColorUniformLocation );
+    Motorcycle( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint normalMtxUniformLocation, GLint materialColorUniformLocation, GLint modelMtxUniformLocation);
 
     void drawMotorcycle(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx);
 
@@ -47,6 +47,7 @@ private:
         GLint mvpMtx;
         GLint normalMtx;
         GLint materialColor;
+        GLint modelMtx;
     } _shaderProgramUniformLocations;
 
     //drawing info

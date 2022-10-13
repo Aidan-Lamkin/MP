@@ -17,7 +17,7 @@ public:
     /// \param mvpMtxUniformLocation uniform location for the full precomputed MVP matrix
     /// \param normalMtxUniformLocation uniform location for the precomputed Normal matrix
     /// \param materialColorUniformLocation uniform location for the material diffuse color
-    Bobomb( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint normalMtxUniformLocation, GLint materialColorUniformLocation );
+    Bobomb( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint normalMtxUniformLocation, GLint materialColorUniformLocation,GLint modelMtxUniformLocation );
 
     /// \desc draws the model bobomb for a given MVP matrix
     /// \param modelMtx existing model matrix to apply to bobomb
@@ -68,6 +68,8 @@ private:
         GLint normalMtx;
         /// \desc location of the material diffuse color
         GLint materialColor;
+        /// \desc location of the model matrix
+        GLint modelMtx;
     } _shaderProgramUniformLocations;
 
 
