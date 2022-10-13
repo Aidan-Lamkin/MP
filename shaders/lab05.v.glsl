@@ -66,13 +66,13 @@ void main() {
     float angle = acos(float(dot(spotPointVector, newSpotDirection))/(length(spotPointVector)*length(newSpotDirection)));
     if(angle<1){
 
-//        vec3 spotDiffuse = spotLightColor * materialColor*max(dot(spotPointVector, newNormalVector),0);
-//        vec3 spotAmbiant = spotLightColor * materialColor*0.2;
-//        spotLight = spotAmbiant + spotDiffuse;
-//
-//        float spotLightDistance = sqrt(pow(x-spotLightPosition[0],2) + pow(y-spotLightPosition[1],2) + pow(z-spotLightPosition[2],2));
-//        float spotAttenuation = 1.0/(0.5+0.1*spotLightDistance+0.02*pow(spotLightDistance,2));
-//        spotLight = spotLight * spotAttenuation;
+        vec3 spotDiffuse = spotLightColor * materialColor*max(dot(spotPointVector, newNormalVector),0);
+        vec3 spotAmbiant = spotLightColor * materialColor*0.2;
+        spotLight = spotAmbiant + spotDiffuse;
+
+        float spotLightDistance = sqrt(pow(x-spotLightPosition[0],2) + pow(y-spotLightPosition[1],2) + pow(z-spotLightPosition[2],2));
+        float spotAttenuation = 1.0/(0.5+0.1*spotLightDistance+0.02*pow(spotLightDistance,2));
+        spotLight = spotLight * spotAttenuation;
     }
 
     //Directional Light
