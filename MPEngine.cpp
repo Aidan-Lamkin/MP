@@ -23,7 +23,7 @@ GLfloat getRand() {
 MPEngine::MPEngine()
          : CSCI441::OpenGLEngine(4, 1,
                                  640, 480,
-                                 "A3: The Cabin in the Woods") {
+                                 "MP: The Fellowship") {
 
     for(auto& _key : _keys) _key = GL_FALSE;
 
