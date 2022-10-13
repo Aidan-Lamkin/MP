@@ -321,10 +321,10 @@ void MPEngine::_setupScene() {
     glm::vec3 pointLightColor = glm::vec3(1,1,1);
     glm::vec3 pointLightPosition = glm::vec3(-10,1,-10);
 
-    glm::vec3 spotLightColor = glm::vec3(1,1,1);
-    glm::vec3 spotLightPosition = glm::vec3(0,5,0); //
-    float spotLightPhi = 0.0872665; //Cutoff angle
-    glm::vec3 spotLightDirection = glm::vec3(0,1,0); //Vector to look down
+    glm::vec3 spotLightColor = glm::vec3(1,1,1); //Light Color
+    glm::vec3 spotLightPosition = glm::vec3(0,5,0); //Light position
+    float spotLightPhi = 1; //Cutoff angle
+    glm::vec3 spotLightDirection = glm::vec3(0,-1,0); //Vector to look down
 
     glProgramUniform3fv(_lightingShaderProgram->getShaderProgramHandle(),
                         _lightingShaderUniformLocations.lightColor,1,&lightColor[0]);

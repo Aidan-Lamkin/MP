@@ -139,7 +139,7 @@ private:
         GLint modelMtx;
         GLint spotLightPosition;
         GLint spotLightColor;
-        GLfloat spotLightPhi;
+        GLint spotLightPhi;
         GLint spotLightDirection;
     } _lightingShaderUniformLocations;
     /// \desc stores the locations of all of our shader attributes
